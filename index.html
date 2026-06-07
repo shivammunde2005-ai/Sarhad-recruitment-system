@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarhad College Recruitment System</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome & Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="sarhad.png" alt="Logo" class="nav-logo" onerror="this.src='https:'//cdn-icons-png.flaticon.com/512/5329/5329862.png'"> 
+            Sarhad Recruitment Portal
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" onclick="showSection('home-section')">Home</a></li>
+            <li><a href="#" onclick="showSection('departments-section')">Departments</a></li>
+            <li><a href="#" onclick="showSection('jobs-section')">Jobs</a></li>
+            
+            <!-- Auth Links -->
+            <li class="guest-only"><a href="#" onclick="showSection('login-section')">Login</a></li>
+            <li class="guest-only"><a href="#" onclick="showSection('register-section')" class="btn-nav">Register</a></li>
+            
+            <li class="applicant-only hidden"><a href="#" onclick="showSection('applicant-dashboard')">My Dashboard</a></li>
+            <li class="admin-only hidden"><a href="#" onclick="showSection('admin-dashboard')">Admin Dashboard</a></li>
+            <li class="auth-only hidden"><a href="#" id="logout-btn" class="btn-nav danger">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- 1. Home Section -->
+    <section id="home-section" class="page-section active">
+        <div class="hero fade-in">
+            <h1>Welcome to Sarhad Recruitment Portal</h1>
+            <p>Shape the future by joining our esteemed faculty and staff.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="showSection('jobs-section')"><i class="fa-solid fa-briefcase"></i> View Jobs</button>
+                <button class="btn btn-secondary guest-only" onclick="showSection('register-section')"><i class="fa-solid fa-user-plus"></i> Register Now</button>
+            </div>
+        </div>
+
+        <div class="section-container">
+            <h2 class="section-title">Campus Gallery</h2>
+            <div class="gallery-grid fade-in-up" id="public-gallery-list"></div>
+        </div>
+
+        <div class="section-container">
+            <h2 class="section-title">About Sarhad College</h2>
+            <div class="info-grid fade-in-up" id="public-info-list"></div>
+        </div>
+    </section>
+
+    <!-- 2. Login Section -->
+    <section id="login-section" class="page-section hidden">
+        <div class="form-container fade-in">
+            <h2>Account Login</h2>
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Email Address" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 3. Register Section -->
+    <section id="register-section" class="page-section hidden">
+        <div class="form-container fade-in">
+            <h2>Applicant Registration</h2>
+            <p class="text-muted" style="text-align:center; font-size:12px; margin-bottom: 15px;">(Use admin@sarhadcollege.com to test Admin role)</p>
+            <form id="register-form">
+                <input type="text" id="reg-name" placeholder="Full Name" required>
+                <input type="email" id="reg-email" placeholder="Email Address" required>
+                <input type="password" id="reg-password" placeholder="Password" required>
+                <button type="submit" class="btn btn-secondary w-100">Register</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 4. Admin Dashboard -->
+    <section id="admin-dashboard" class="page-section hidden">
+        <div class="dashboard-header fade-in">
+            <h2><i class="fa-solid fa-user-shield"></i> Admin Dashboard</h2>
+            <div class="tab-buttons">
+                <button class="btn btn-primary" onclick="toggleAdminTabs('manage-home')">Manage Homepage</button>
+                <button class="btn btn-secondary" onclick="toggleAdminTabs('manage-jobs')">Manage Jobs</button>
+                <button class="btn btn-primary" onclick="toggleAdminTabs('manage-applications')">Applications</button>
+            </div>
+        </div>
+
+        <!-- Admin Tab: Manage Homepage -->
+        <div id="manage-home" class="admin-tab fade-in">
+            <div class="admin-grid">
+                <div>
+                    <div class="form-container table-form">
+                        <h3>Upload Campus Image</h3>
+                        <form id="add-image-form">
+                            <input type="text" id="img-title" placeholder="Image Title (e.g., Library)" required>
+                            <input type="file" id="img-file" accept="image/*" required>
+                            <button type="submit" class="btn btn-secondary w-100"><i class="fa-solid fa-upload"></i> Upload Photo</button>
+                        </form>
+                    </div>
+                    <div class="manage-list-container">
+                        <h4>Manage Photos</h4>
+                        <ul class="admin-manage-list" id="admin-photo-list"></ul>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-container table-form">
+                        <h3>Add College Info Card</h3>
+                        <form id="add-info-form">
+                            <input type="text" id="info-title" placeholder="Card Title (e.g., Our Vision)" required>
+                            <textarea id="info-desc" placeholder="Card Description" rows="3" required></textarea>
+                            <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-plus"></i> Add Card</button>
+                        </form>
+                    </div>
+                    <div class="manage-list-container">
+                        <h4>Manage Info Cards</h4>
+                        <ul class="admin-manage-list" id="admin-card-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Tab: Manage Jobs -->
+        <div id="manage-jobs" class="admin-tab hidden fade-in">
+            <div class="form-container table-form" style="max-width: 600px; margin: 0 auto;">
+                <h3>Post a New Job Vacancy</h3>
+                <form id="add-job-form">
+                    <input type="text" id="job-title" placeholder="Job Title" required>
+                    <input type="text" id="job-department" placeholder="Department (e.g. IT, Science)" required>
+                    <input type="text" id="job-qualification" placeholder="Required Qualification" required>
+                    <input type="text" id="job-salary" placeholder="Salary Package" required>
+                    <textarea id="job-desc" placeholder="Job Description" rows="3" required></textarea>
+                    <button type="submit" class="btn btn-secondary w-100"><i class="fa-solid fa-briefcase"></i> Submit Job</button>
+                </form>
+            </div>
+            
+            <h3 class="mt-2 section-title">Current Vacancies</h3>
+            <div class="table-responsive">
+                <table class="styled-table">
+                    <thead><tr><th>Title</th><th>Department</th><th>Qualification</th><th>Actions</th></tr></thead>
+                    <tbody id="admin-jobs-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Admin Tab: Manage Applications -->
+        <div id="manage-applications" class="admin-tab hidden fade-in">
+            <h3 class="section-title">Submitted Applications</h3>
+            <div class="table-responsive">
+                <table class="styled-table">
+                    <thead><tr><th>Applicant Info</th><th>Job Title</th><th>Full Details & Resume</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="admin-apps-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Applicant Dashboard -->
+    <section id="applicant-dashboard" class="page-section hidden">
+        <div class="dashboard-header fade-in">
+            <h2><i class="fa-solid fa-user-graduate"></i> My Applications</h2>
+        </div>
+        <div class="table-responsive fade-in">
+            <table class="styled-table">
+                <thead><tr><th>Job Title</th><th>Application Status</th><th>Interview Details</th></tr></thead>
+                <tbody id="my-applications-list"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 6. Jobs Section -->
+    <section id="jobs-section" class="page-section hidden">
+        <h2 class="section-title">Current Vacancies</h2>
+        <div class="card-grid fade-in-up" id="public-jobs-list"></div>
+    </section>
+
+    <!-- 7. Departments Section -->
+    <section id="departments-section" class="page-section hidden">
+        <h2 class="section-title">Jobs By Department</h2>
+        <div id="department-jobs-list" class="fade-in-up"></div>
+    </section>
+
+    <!-- MODAL: Apply Job -->
+    <div id="apply-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <span class="close" onclick="closeModal('apply-modal')">&times;</span>
+            <h2>Apply for Job</h2>
+            <form id="apply-job-form">
+                <input type="hidden" id="apply-job-id">
+                <input type="hidden" id="apply-job-title">
+                
+                <div class="form-grid">
+                    <input type="text" id="apply-name" placeholder="Full Name" required>
+                    <input type="email" id="apply-email" placeholder="Email Address" required>
+                    <input type="tel" id="apply-phone" placeholder="Phone Number" required>
+                    <select id="apply-gender" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="date" id="apply-dob" required title="Date of Birth">
+                    <input type="text" id="apply-qualification" placeholder="Highest Qualification" required>
+                    <input type="text" id="apply-experience" placeholder="Years of Experience" required>
+                    <div class="file-input-wrapper">
+                        <label for="apply-resume">Upload Resume (PDF/DOC) <br><small>Max size 2MB</small></label>
+                        <input type="file" id="apply-resume" accept=".pdf,.doc,.docx" required>
+                    </div>
+                </div>
+                <textarea id="apply-skills" placeholder="Describe your skills and expertise" rows="3" required></textarea>
+                
+                <button type="submit" class="btn btn-primary w-100" id="apply-submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit Job (Admin) -->
+    <div id="edit-job-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('edit-job-modal')">&times;</span>
+            <h2>Edit Job Vacancy</h2>
+            <form id="edit-job-form">
+                <input type="hidden" id="edit-job-id">
+                <input type="text" id="edit-job-title" placeholder="Job Title" required>
+                <input type="text" id="edit-job-department" placeholder="Department" required>
+                <input type="text" id="edit-job-qualification" placeholder="Qualification" required>
+                <input type="text" id="edit-job-salary" placeholder="Salary" required>
+                <textarea id="edit-job-desc" placeholder="Job Description" rows="3" required></textarea>
+                <button type="submit" class="btn btn-secondary w-100">Update Job</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Interview Date (Admin) -->
+    <div id="interview-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('interview-modal')">&times;</span>
+            <h2>Schedule Interview</h2>
+            <form id="schedule-interview-form">
+                <input type="hidden" id="interview-app-id">
+                <select id="interview-mode" required>
+                    <option value="" disabled selected>Interview Mode</option>
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
+                </select>
+                <input type="date" id="interview-date" required>
+                <input type="time" id="interview-time" required>
+                <input type="text" id="interview-place" placeholder="Interview Place (e.g. Zoom, Block A Room 2)" required>
+                <textarea id="interview-address" placeholder="Full Address / Meeting Link" rows="2" required></textarea>
+                <button type="submit" class="btn btn-secondary w-100">Confirm Schedule</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3><img src="sarhad.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5329/5329862.png'" class="footer-logo" alt=""> Sarhad College</h3>
+                <p>Empowering minds and shaping futures through excellence in education.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#" onclick="showSection('home-section')">Home</a></li>
+                    <li><a href="#" onclick="showSection('jobs-section')">Careers</a></li>
+                    <li><a href="#" onclick="showSection('departments-section')">Departments</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Connect With Us</h4>
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/sarhadcollege_acs_official/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/share/18GBJdpjn6/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://sarhadcollege.education/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-google"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Sarhad College Recruitment System. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK & App Logic -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
